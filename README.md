@@ -122,3 +122,6 @@ We adopted some modules or code snippets from [AllenNLP](https://github.com/alle
 [OpenNMT-py](https://github.com/OpenNMT/OpenNMT-py)
  and [NeuroNLP2](https://github.com/XuezheMax/NeuroNLP2).
 Thanks to these open-source projects!
+
+## License
+[MIT](LICENSE)
