@@ -1,0 +1,23 @@
+overrides
+torch==0.4.1
+h5py
+boto3
+pytorch-pretrained-bert==0.6.2
+
+# Data processing
+spacy
+ftfy
+nltk
+conllu
+pyyaml
+pycorenlp==0.3
+penman
+editdistance
+word2number
+bs4
+lxml
+networkx
+
+# Write logs for training visualisation with the Tensorboard application
+# Install the Tensorboard application separately (part of tensorflow) to view them.
+tensorboardX==1.2

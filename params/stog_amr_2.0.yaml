@@ -1,0 +1,191 @@
+# Parameters of the Seq2Seq Model
+
+# Device-sensitive parameters
+amr_data_dir: &amr_data_dir data/AMR/amr_2.0
+glove: &glove data/glove/glove.840B.300d.zip
+
+
+# Model parameters
+model:
+  model_type: STOG
+  use_must_copy_embedding: True
+  use_char_cnn: True
+  use_coverage: True
+  use_aux_encoder: False
+  use_bert: True
+
+  bert:
+    pretrained_model_dir: data/bert-base-cased
+    hidden_size: 768
+
+  encoder_token_embedding:
+    num_embeddings:
+    vocab_namespace: 'encoder_token_ids'
+    embedding_dim: 300
+    padding_index: 0
+    dropout: 0.33
+    pretrained_file: *glove
+
+  encoder_pos_embedding:
+    num_embeddings:
+    vocab_namespace: 'pos_tags'
+    embedding_dim: 100
+    padding_index: 0
+    dropout: 0
+
+  encoder_must_copy_embedding:
+    num_embeddings: 3
+    vocab_namespace: 'must_copy_tags'
+    embedding_dim: 50
+    padding_index:
+    dropout: 0
+
+  encoder_char_embedding:
+    num_embeddings:
+    vocab_namespace: 'encoder_token_characters'
+    embedding_dim: &encoder_char_embedding_dim 100
+    padding_index: 0
+    dropout: 0
+    pretrained_file:
+
+  encoder_char_cnn:
+    embedding_dim: *encoder_char_embedding_dim
+    num_filters: 100
+    ngram_filter_sizes: [3]
+
+  decoder_token_embedding:
+    num_embeddings:
+    vocab_namespace: 'decoder_token_ids'
+    embedding_dim: 300
+    padding_index: 0
+    dropout: 0.33
+    pretrained_file: *glove
+    data_type: AMR
+
+  decoder_pos_embedding:
+    num_embeddings:
+    vocab_namespace: 'pos_tags'
+    embedding_dim: 100
+    padding_index: 0
+    dropout: 0
+
+  decoder_coref_embedding:
+    num_embeddings: 500
+    embedding_dim: 50
+    padding_index: 0
+    dropout: 0.33
+
+  decoder_char_embedding:
+    num_embeddings:
+    vocab_namespace: 'decoder_token_characters'
+    embedding_dim: &decoder_char_embedding_dim 100
+    padding_index: 0
+    dropout: 0.33
+    pretrained_file:
+
+  decoder_char_cnn:
+    embedding_dim: *decoder_char_embedding_dim
+    num_filters: 100
+    ngram_filter_sizes: [3]
+
+  encoder:
+    input_size:
+    hidden_size: 512
+    num_layers: 2
+    use_highway: False
+    dropout: 0.33
+
+  decoder:
+    input_size:
+    hidden_size: &decoder_hidden_size 1024
+    num_layers: 2
+    use_highway: False
+    dropout: 0.33
+
+  source_attention:
+    attention_function: mlp
+    coverage: True
+
+  coref_attention:
+    attention_function: mlp
+    share_linear: True
+
+  generator:
+    input_size: *decoder_hidden_size
+    # Specify vocab_size and pad_idx dynamically
+    vocab_size:
+    pad_idx:
+    force_copy: True
+
+  graph_decoder:
+    decode_algorithm: 'greedy'
+    input_size: *decoder_hidden_size
+    edge_node_hidden_size: 256
+    edge_label_hidden_size: 128
+    dropout: 0.33
+
+  mimick_test:
+    data: data/AMR/amr_2.0/dev.txt.features.preproc
+    prediction: dev.pred.txt
+    batch_size: 32
+    eval_script: scripts/eval_test.sh
+    smatch_dir: tools/amr-evaluation-tool-enhanced
+    word_splitter: &word_splitter data/bert-base-cased/bert-base-cased-vocab.txt
+
+
+# Vocabulary
+vocab:
+  non_padded_namespaces: [must_copy_tags, coref_tags]
+  min_count:
+      encoder_token_ids: 1
+      decoder_token_ids: 1
+  max_vocab_size:
+      encoder_token_ids: 18000
+      decoder_token_ids: 12200
+
+
+# Data parameters
+data:
+  data_dir: *amr_data_dir
+  train_data: train.txt.features.preproc
+  dev_data: dev.txt.features.preproc
+  test_data: test.txt.features.preproc
+  data_type: AMR
+  batch_first: True
+  iterator:
+    train_batch_size: &train_batch_size 64
+    test_batch_size: 32
+    iter_type: BucketIterator
+    sorting_keys:  # (field, padding type)
+      - [tgt_tokens, num_tokens]
+  pretrain_token_emb: *glove
+  pretrain_char_emb:
+  word_splitter: *word_splitter
+
+
+# Training parameters
+environment:
+  recover: False
+  seed: 1
+  numpy_seed: 1
+  torch_seed: 1
+  serialization_dir: &serialization_dir ckpt-amr-2.0
+  file_friendly_logging: False
+  gpu: True
+  cuda_device: 0
+
+trainer:
+  device:
+  no_grad: []
+  optimizer_type: adam
+  learning_rate: 0.001
+  max_grad_norm: 5.0
+  batch_size: *train_batch_size
+  shuffle: True
+  epochs: 120
+  dev_metric: +F1
+  serialization_dir: *serialization_dir
+  model_save_interval:
+
+test:
+  evaluate_on_test: True
