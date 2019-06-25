@@ -15,7 +15,7 @@ If you find our code is useful, please cite:
     month = jul,
     year = "2019",
     address = "Florence, Italy",
-    publisher = "Association for Computational Linguistics",
+    publisher = "Association for Computational Linguistics"
 }
 ```
 
