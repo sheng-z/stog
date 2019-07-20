@@ -111,7 +111,7 @@ python -u -m stog.commands.predict \
 ```
 
 ## 8. Evaluation
-
+Note that the evaluation tool works on `python2`, so please make sure `python2` is visible in your `$PATH`.
 ```bash
 ./scripts/compute_smatch.sh test.pred.txt data/AMR/amr_2.0/test.txt
 ```
