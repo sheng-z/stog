@@ -107,7 +107,7 @@ python -u -m stog.commands.predict \
 
 ## 7. Data Postprocessing    
 ```bash
-./script/postprocess_2.0.sh test.pred.txt
+./scripts/postprocess_2.0.sh test.pred.txt
 ```
 
 ## 8. Evaluation
@@ -115,6 +115,14 @@ Note that the evaluation tool works on `python2`, so please make sure `python2` 
 ```bash
 ./scripts/compute_smatch.sh test.pred.txt data/AMR/amr_2.0/test.txt
 ```
+
+## Pre-trained Models
+Here are pre-trained models: 
+[ckpt-amr-2.0.tar.gz](https://www.cs.jhu.edu/~s.zhang/data/AMR/ckpt-amr-2.0.tar.gz) 
+and [ckpt-amr-1.0.tar.gz](https://www.cs.jhu.edu/~s.zhang/data/AMR/ckpt-amr-1.0.tar.gz).
+To use them for prediction, simply download & unzip them, and then run **Step 6-8**.
+
+In case that you only need the pre-trained model prediction (i.e., `test.pred.txt`), you can find it in the download.
 
 ## Acknowledgements
 
